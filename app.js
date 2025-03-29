@@ -4,6 +4,7 @@ const { router } = require('./src/routes/test');
 // const authRoutes = require("./routes/authRoutes");
 const { authrouter } = require('./src/routes/authRoutes');
 const { default: mongoose } = require('./config/db');
+// const mongoose = require("mongoose");
 require("dotenv/config")
 const app = express();
 // mongoose();
