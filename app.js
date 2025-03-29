@@ -1,8 +1,10 @@
 const express = require('express');
 const cors = require('cors'); // CORS import kiya
-const { router } = require('./src/Route/test');
+const { router } = require('./src/routes/test');
 const { connectDB } = require('./config/db');
-
+// const authRoutes = require("./routes/authRoutes");
+const { authrouter } = require('./src/routes/authRoutes');
+require("dotenv/config")
 const app = express();
 
 // CORS Middleware
@@ -17,6 +19,7 @@ app.use(express.json());
 
 connectDB();
 app.use("/api", router);
+app.use("/api/auth", authrouter);
 
 const PORT = 5000;
 app.listen(PORT, () => {
