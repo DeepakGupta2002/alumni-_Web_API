@@ -1,12 +1,12 @@
 const express = require('express');
 const cors = require('cors'); // CORS import kiya
 const { router } = require('./src/routes/test');
-const { connectDB } = require('./config/db');
 // const authRoutes = require("./routes/authRoutes");
 const { authrouter } = require('./src/routes/authRoutes');
+const { default: mongoose } = require('./config/db');
 require("dotenv/config")
 const app = express();
-
+// mongoose();
 // CORS Middleware
 app.use(cors({
     origin: '*', // Sabhi origins allow karne ke liye
@@ -17,7 +17,6 @@ app.use(cors({
 // Middleware for JSON requests
 app.use(express.json());
 
-connectDB();
 app.use("/api", router);
 app.use("/api/auth", authrouter);
 
