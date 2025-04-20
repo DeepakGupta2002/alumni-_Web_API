@@ -13,20 +13,24 @@ exports.register = async (req, res) => {
 
         if (!user) {
             user = new User({ name, email, role });
-            await user.save();
+        } else {
+            user.name = name;
+            user.role = role;
         }
 
-        // Generate OTP
         const otp = Math.floor(100000 + Math.random() * 900000);
         user.otp = otp;
-        user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // Valid for 10 min
+        user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
         await user.save();
         await sendOTP(email, otp);
 
-        res.json({ message: "OTP sent to your email" });
+        res.setHeader("Content-Type", "application/json");
+        res.status(200).json({ message: "OTP sent to your email" });
+
     } catch (error) {
         console.error(error);
+        res.setHeader("Content-Type", "application/json");
         res.status(500).json({ message: "Internal Server Error" });
     }
 };

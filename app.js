@@ -18,6 +18,7 @@ app.use(cors({
 // Middleware for JSON requests
 app.use(express.json());
 
+app.use(express.urlencoded({ extended: true })); // URL encoded requests
 app.use("/api", router);
 app.use("/api/auth", authrouter);
 

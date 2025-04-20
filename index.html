@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OTP Auth UI</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        h2 {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h2>Register</h2>
+        <input type="text" id="name" placeholder="Name" />
+        <input type="email" id="regEmail" placeholder="Email" />
+        <select id="role">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+        </select>
+        <button onclick="register()">Send OTP</button>
+    </div>
+
+    <div class="card">
+        <h2>Login</h2>
+        <input type="email" id="loginEmail" placeholder="Email" />
+        <button onclick="login()">Send OTP</button>
+    </div>
+
+    <div class="card">
+        <h2>Verify OTP</h2>
+        <input type="email" id="otpEmail" placeholder="Email" />
+        <input type="text" id="otp" placeholder="Enter OTP" />
+        <button onclick="verifyOtp()">Verify OTP</button>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:5000/api/auth"; // 🔁 Replace with your real domain
+
+        async function register() {
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("regEmail").value;
+            const role = document.getElementById("role").value;
+
+            const res = await fetch(`${API_BASE}/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, role })
+            });
+
+            const data = await res.json();
+            alert(data.message);
+        }
+
+        async function login() {
+            const email = document.getElementById("loginEmail").value;
+
+            const res = await fetch(`${API_BASE}/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email })
+            });
+
+            const data = await res.json();
+            alert(data.message);
+        }
+
+        async function verifyOtp() {
+            const email = document.getElementById("otpEmail").value;
+            const otp = document.getElementById("otp").value;
+
+            const res = await fetch(`${API_BASE}/verify`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, otp })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                localStorage.setItem("authToken", data.token);
+                alert(data.message + " ✅");
+                console.log("User:", data.user);
+            } else {
+                alert(data.message + " ❌");
+            }
+        }
+    </script>
+
+</body>
+
+</html>
