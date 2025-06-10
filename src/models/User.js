@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
     name: String,
     email: { type: String, required: true, unique: true },
-    role: { type: String, enum: ["alumni", "university_admin", "recruiter"], required: true },
+    role: { type: String, enum: ["alu~mni", "university_admin", "recruiter"], required: true },
     universityname: { type: String },
     otp: String,
     otpExpiry: Date,

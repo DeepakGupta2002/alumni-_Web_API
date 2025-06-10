@@ -4,6 +4,7 @@ const { router } = require('./src/routes/test');
 // const authRoutes = require("./routes/authRoutes");
 const { authrouter } = require('./src/routes/authRoutes');
 const { default: mongoose } = require('./config/db');
+const { InstituteRouter } = require('./src/routes/Institute.js/Institute');
 // const mongoose = require("mongoose");
 require("dotenv/config")
 const app = express();
@@ -17,12 +18,17 @@ app.use(cors({
 
 // Middleware for JSON requests
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
+
 
 app.use(express.urlencoded({ extended: true })); // URL encoded requests
 app.use("/api", router);
 app.use("/api/auth", authrouter);
 
-const PORT = 5000;
+// InstituteRouter api for register 
+app.use('/api', InstituteRouter);
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
