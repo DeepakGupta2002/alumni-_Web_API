@@ -2,7 +2,7 @@ const User = require("../models/User");
 const sendOTP = require("../utils/generateOtp");
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = "your_jwt_secret_key"; // 🔹 Replace with a strong secret key
+const JWT_SECRET = "your_jwt_secret_key"; // Replace with strong secret
 
 // 🔹 1️⃣ Register User & Send OTP
 exports.register = async (req, res) => {
@@ -11,6 +11,10 @@ exports.register = async (req, res) => {
 
         let user = await User.findOne({ email });
 
+        if (user && user.isVerified) {
+            return res.status(400).json({ message: "User already registered and verified. Please login." });
+        }
+
         if (!user) {
             user = new User({ name, email, role });
         } else {
@@ -18,24 +22,24 @@ exports.register = async (req, res) => {
             user.role = role;
         }
 
+        // Generate OTP
         const otp = Math.floor(100000 + Math.random() * 900000);
         user.otp = otp;
-        user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+        user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+        user.isVerified = false; // Reset verification on re-register
 
         await user.save();
         await sendOTP(email, otp);
 
-        res.setHeader("Content-Type", "application/json");
         res.status(200).json({ message: "OTP sent to your email" });
 
     } catch (error) {
         console.error(error);
-        res.setHeader("Content-Type", "application/json");
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
-// 🔹 2️⃣ Login (Send OTP to User's Email)
+// 🔹 2️⃣ Login (Send OTP to Verified User's Email)
 exports.login = async (req, res) => {
     try {
         const { email } = req.body;
@@ -45,10 +49,14 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: "User not found" });
         }
 
+        if (!user.isVerified) {
+            return res.status(403).json({ message: "Please verify your email before login." });
+        }
+
         // Generate OTP
         const otp = Math.floor(100000 + Math.random() * 900000);
         user.otp = otp;
-        user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // Valid for 10 min
+        user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
         await user.save();
         await sendOTP(email, otp);
@@ -70,16 +78,17 @@ exports.verifyOtp = async (req, res) => {
             return res.status(400).json({ message: "Invalid or Expired OTP" });
         }
 
-        // Reset OTP fields
+        // Reset OTP fields and mark as verified
         user.otp = null;
         user.otpExpiry = null;
+        user.isVerified = true;
         await user.save();
 
-        // 🔹 Generate JWT Token
+        // Generate JWT Token
         const token = jwt.sign(
             { userId: user._id, email: user.email, role: user.role },
             JWT_SECRET,
-            { expiresIn: "7d" } // Token expires in 7 days
+            { expiresIn: "7d" }
         );
 
         res.json({ message: "Login Successful", token, user });

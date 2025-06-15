@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const instituteSchema = new mongoose.Schema(
     {
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // User ka reference
         instituteName: { type: String, required: true },
         instituteType: { type: String, required: true },
         email: { type: String, required: true, unique: true },
@@ -28,8 +29,9 @@ const instituteSchema = new mongoose.Schema(
             phone: { type: String },
         },
         status: { type: String, default: "Pending" },
+
     },
-    { timestamps: true } // Adds createdAt & updatedAt automatically
+    { timestamps: true }
 );
 
 module.exports = mongoose.model("Institute", instituteSchema);

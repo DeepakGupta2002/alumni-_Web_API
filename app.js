@@ -5,6 +5,8 @@ const { router } = require('./src/routes/test');
 const { authrouter } = require('./src/routes/authRoutes');
 const { default: mongoose } = require('./config/db');
 const { InstituteRouter } = require('./src/routes/Institute.js/Institute');
+const { RecruiterRouter } = require('./src/routes/recuriter/recuriter');
+const { alumniProfileRouter } = require('./src/routes/alumniProfileRoutes');
 // const mongoose = require("mongoose");
 require("dotenv/config")
 const app = express();
@@ -27,6 +29,11 @@ app.use("/api/auth", authrouter);
 
 // InstituteRouter api for register 
 app.use('/api', InstituteRouter);
+// RecruiterRouter api
+app.use('/api', RecruiterRouter)
+
+// alumniProfileRouter api
+app.use("/api", alumniProfileRouter)
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

@@ -28,6 +28,8 @@ exports.verifyToken = async (req, res, next) => {
 
 // 🔹 2️⃣ Middleware for Role-Based Access
 exports.checkRole = (roles) => {
+    // console.log(req.body)
+    // console.log(roles)
     return (req, res, next) => {
         if (!roles.includes(req.user.role)) {
             return res.status(403).json({ message: "Access Denied! Insufficient Permissions" });
