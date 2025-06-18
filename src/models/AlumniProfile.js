@@ -13,7 +13,11 @@ const AlumniProfileSchema = new mongoose.Schema(
         mobile: { type: String, required: true },
         address: String,
         courseName: { type: String, required: true },
-        college: { type: String },
+        college: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Institute",
+            required: true,
+        },
         departmentName: String,
         passingYear: Number,
         currentJob: String,
@@ -24,7 +28,13 @@ const AlumniProfileSchema = new mongoose.Schema(
         experience: Number,
         marksheetUrl: String,
         photoUrl: String,
+        verified: {
+            type: Boolean,
+            default: false,
+        },
+
     },
+
     { timestamps: true }
 );
 

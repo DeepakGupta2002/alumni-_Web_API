@@ -114,6 +114,8 @@ const deleteInstitute = async (req, res) => {
     }
 };
 
+
+
 exports.verifyInstitute =
     module.exports = {
         registerInstitute,

@@ -9,5 +9,4 @@ const userSchema = new mongoose.Schema({
     otpExpiry: Date,
     isVerified: { type: Boolean, default: false }, // ✅ New field
 });
-
 module.exports = mongoose.model("User", userSchema);

@@ -213,6 +213,21 @@ InstituteRouter.get("/verified-institutes", async (req, res) => {
     }
 });
 
+InstituteRouter.get("/public/institutes", async (req, res) => {
+    try {
+        const institutes = await Institute.find({ status: "Verified" }) // 👈 Filter by approved status
+            .select("instituteName instituteType email phone website address affiliations logo status userId")
+            .populate("userId", "name email role");
+
+        res.status(200).json(institutes);
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 InstituteRouter.delete("/institute/:id", verifyToken, checkRole(["university_admin"]), deleteInstitute);
+
+
+
 
 module.exports = { InstituteRouter };
