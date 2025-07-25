@@ -23,12 +23,35 @@ exports.createAlumniRecord = async (req, res) => {
         });
 
         await newRecord.save();
-        res.status(201).json({ message: "Alumni record added successfully", record: newRecord });
+
+        // ✅ Auto-verify matching AlumniProfile if it exists
+        const verifiedProfile = await AlumniProfile.findOneAndUpdate(
+            {
+                enrollment: enrollment.trim(),
+                college: new mongoose.Types.ObjectId(instituteId)
+            },
+            { verified: true },
+            { new: true }
+        );
+
+        let response = {
+            message: "Alumni record added successfully",
+            record: newRecord
+        };
+
+        if (verifiedProfile) {
+            response.verifiedProfile = verifiedProfile;
+            response.verificationMessage = "Matching alumni profile verified automatically.";
+        }
+
+        res.status(201).json(response);
+
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Server error", error: err.message });
     }
 };
+
 
 // Get all alumni records for an institute
 exports.getAlumniRecordsByInstitute = async (req, res) => {
@@ -103,7 +126,6 @@ exports.getProfilesByInstitute = async (req, res) => {
 const mongoose = require("mongoose");
 
 
-
 exports.verifyProfilesByInstitute = async (req, res) => {
     try {
         const { instituteId } = req.params;
@@ -127,18 +149,27 @@ exports.verifyProfilesByInstitute = async (req, res) => {
                     college: new mongoose.Types.ObjectId(instituteId)
                 },
                 { verified: true },
-                { new: true } // 👈 to get updated document
+                { new: true }
             );
 
             if (result) {
                 verifiedCount++;
-                verifiedProfiles.push(result); // 👈 collect verified profile
+                verifiedProfiles.push(result);
+
+                // ✅ Also update corresponding AlumniRecord's verified field
+                await AlumniRecord.findOneAndUpdate(
+                    {
+                        enrollment: enrollment,
+                        instituteId: new mongoose.Types.ObjectId(instituteId)
+                    },
+                    { verified: true }
+                );
             }
         }
 
         res.status(200).json({
             message: `${verifiedCount} profile(s) verified successfully.`,
-            verifiedProfiles: verifiedProfiles // 👈 include data in response
+            verifiedProfiles: verifiedProfiles
         });
 
     } catch (err) {
