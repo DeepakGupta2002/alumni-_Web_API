@@ -12,25 +12,15 @@ const {
     getAllVerifiedAlumni
 } = require("../controllers/alumniRecordController");
 
-// ✅ Always put static routes BEFORE dynamic ones
+// ✅ Static routes FIRST
 AlumaiRecordRouter.get('/verified-alumni', getAllVerifiedAlumni);
-
-// POST: Add new record
-AlumaiRecordRouter.post("/", verifyToken, createAlumniRecord);
-
-// GET: Records by institute
-AlumaiRecordRouter.get("/:instituteId", verifyToken, getAlumniRecordsByInstitute);
-
-// PUT: Update record
-AlumaiRecordRouter.put("/:id", verifyToken, updateAlumniRecord);
-
-// DELETE: Remove record
-AlumaiRecordRouter.delete("/:id", verifyToken, deleteAlumniRecord);
-
-// GET: Get profiles by institute
 AlumaiRecordRouter.get("/institute/:instituteId", verifyToken, getProfilesByInstitute);
-
-// PUT: Verify profiles by institute
 AlumaiRecordRouter.put('/verify-profiles/:instituteId', verifyProfilesByInstitute);
+
+
+AlumaiRecordRouter.get("/:instituteId", verifyToken, getAlumniRecordsByInstitute);
+AlumaiRecordRouter.post("/", verifyToken, createAlumniRecord);
+AlumaiRecordRouter.put("/:id", verifyToken, updateAlumniRecord);
+AlumaiRecordRouter.delete("/:id", verifyToken, deleteAlumniRecord);
 
 module.exports = { AlumaiRecordRouter };
